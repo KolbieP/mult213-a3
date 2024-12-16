@@ -40,6 +40,11 @@ button {
   padding-bottom: 2em;
 }
 
+.count {
+  color: #6a0dad;
+  padding-bottom: 2em;
+}
+
 .book {
   /* display: inline-block; If I want the search results to be displayed horizontally instead of vertically*/
   background-color: #c5b5e3; 

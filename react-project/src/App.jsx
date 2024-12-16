@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './index.css'; 
 
 const bookList = [
@@ -26,21 +26,52 @@ const bookList = [
     title: "Begin Again",
     author: "Emma Lord",
     releaseDate: "2024"
+  },
+  {
+    title: "Throne of Glass",
+    author: "Sarah J. Maas",
+    releaseDate: "2012"
+  },
+  {
+    title: "Red Queen",
+    author: "Victoria Aveyard",
+    releaseDate: "2011"
+  },
+  {
+    title: "The Awakening",
+    author: "Jerold Huber",
+    releaseDate: "2002"
+  },
+  {
+    title: "Into the hollow wind",
+    author: "Kolbie Parker",
+    releaseDate: "2027"
+  },
+  {
+    title: "The Bleeding Hearts",
+    author: "Kolbie Parker",
+    releaseDate: "2026"
   }
 ];
 
 function App() {
   const [books, setBook] = useState([]);
-  const [newBook, setNewTodo] = useState("");
+  const [newBook, setNewBook] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredBooks, setFilteredBooks] = useState([]);
+  const [bookCount, setBookCount] = useState(0);
+
+  //Counts the number of books in the TBR list 
+  useEffect(() => {
+    setBookCount(books.length);
+  }, [books]);
 
   // Search the books in the array and then output books that meet that search
   const searchBooks = () => {
     const results = bookList.filter(book =>
       book.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredBooks(results);
+    ).slice(0, 5); // Limit results to the first 5 books
+    setFilteredBooks(results.length > 0 ? results : [{ title: "No results", author: "", releaseDate: "" }]);
   };
 
   //Clear the books that were returned from the search result 
@@ -58,7 +89,7 @@ function App() {
   const handleSubmit = (event) => {
     event.preventDefault();
     setBook([...books, { id: Date.now(), text: newBook, completed: false }]);
-    setNewTodo("");
+    setNewBook("");
   };
 
   //Goes through the books state and updates the completed status of the book 
@@ -85,7 +116,6 @@ function App() {
       <h2>Search</h2>
       <p className='info'>Your adventure in finding the next great read starts here. Search for your favorite books, discover new ones, and embark on a literary journey with us!</p>
       
-      {/* Book search div. Have it so that they can be added to the books on deck and that it pulls from the api */}
       <div>
         <input
           type="text"
@@ -110,7 +140,7 @@ function App() {
 
       <h2>Books on Deck</h2>
       <p className='info'>Organize the books you can't wait to read! Add to your TBR (To Be Read) list and embark on endless journeys through the pages of great stories. Let's get reading!</p>
-      
+      <p className='count'>How many books in your list: {bookCount}</p> 
       {/* Book on Deck. Maybe make it so the only way you can add a book is through searching up the book then clicking add and then you can only strike through and delete books in this section */}
       {/* <form onSubmit={handleSubmit}>
         <input
