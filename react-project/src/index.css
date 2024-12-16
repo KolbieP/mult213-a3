@@ -30,7 +30,7 @@ button {
   transition: background-color 0.3s ease;
 }
 
-.button:hover {
+button:hover {
   background-color: #333333; 
 }
 
@@ -43,6 +43,14 @@ button {
 .count {
   color: #6a0dad;
   padding-bottom: 2em;
+}
+
+.onDeck {
+  list-style-type: none;
+}
+
+.onDecklist {
+  padding: 0.25em;
 }
 
 .book {

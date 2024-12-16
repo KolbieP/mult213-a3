@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './index.css'; 
 
 const bookList = [
@@ -54,6 +54,7 @@ const bookList = [
   }
 ];
 
+
 function App() {
   const [books, setBook] = useState([]);
   const [newBook, setNewBook] = useState("");
@@ -67,11 +68,28 @@ function App() {
   }, [books]);
 
   // Search the books in the array and then output books that meet that search
-  const searchBooks = () => {
-    const results = bookList.filter(book =>
-      book.title.toLowerCase().includes(searchQuery.toLowerCase())
-    ).slice(0, 5); // Limit results to the first 5 books
-    setFilteredBooks(results.length > 0 ? results : [{ title: "No results", author: "", releaseDate: "" }]);
+  // const searchBooks = () => {
+  //   const results = bookList.filter(book =>
+  //     book.title.toLowerCase().includes(searchQuery.toLowerCase())
+  //   ).slice(0, 5); // Limit results to the first 5 books
+  //   setFilteredBooks(results.length > 0 ? results : [{ title: "No results", author: "", releaseDate: "" }]);
+  // };
+
+  // Search the books using the Open Library API
+  const searchBooks = async () => {
+    try {
+      const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(searchQuery)}`);
+      const data = await response.json();
+      const results = data.docs.slice(0, 5).map(book => ({
+        title: book.title,
+        author: book.author_name ? book.author_name.join(', ') : 'Unknown Author',
+        releaseDate: book.first_publish_year ? book.first_publish_year.toString() : 'Unknown Date'
+      }));
+      setFilteredBooks(results.length > 0 ? results : [{ title: "No results", author: "", releaseDate: "" }]);
+    } catch (error) {
+      console.error("Error fetching data from Open Library API:", error);
+      setFilteredBooks([{ title: "No results", author: "", releaseDate: "" }]);
+    }
   };
 
   //Clear the books that were returned from the search result 
@@ -106,8 +124,12 @@ function App() {
   };
 
   //This adds a book to the TBR section from the search section
+  //Updated so that a book can only be added once
   const addtoList = (book) => {
-    setBook([...books, { id: Date.now(), text: `${book.title} by ${book.author} (${book.releaseDate})`, completed: false }]);
+    const isBookInList = books.some(b => b.text === `${book.title} by ${book.author} (${book.releaseDate})`);
+    if (!isBookInList) {
+      setBook([...books, { id: Date.now(), text: `${book.title} by ${book.author} (${book.releaseDate})`, completed: false }]);
+    }
   };
 
   return (
@@ -141,18 +163,10 @@ function App() {
       <h2>Books on Deck</h2>
       <p className='info'>Organize the books you can't wait to read! Add to your TBR (To Be Read) list and embark on endless journeys through the pages of great stories. Let's get reading!</p>
       <p className='count'>How many books in your list: {bookCount}</p> 
-      {/* Book on Deck. Maybe make it so the only way you can add a book is through searching up the book then clicking add and then you can only strike through and delete books in this section */}
-      {/* <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={newBook}
-          onChange={(event) => setNewTodo(event.target.value)}
-        />
-        <button type="submit">Add To Do</button>
-      </form> */}
-      <ul>
+      
+      <ul className='onDeck'>
         {books.map((book) => (
-          <li key={book.id}>
+          <li className='onDecklist' key={book.id}>
             <input
               type="checkbox"
               checked={book.completed}
