@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './index.css'; 
 
 const bookList = [
   {
@@ -82,14 +83,14 @@ function App() {
     <div>
       <h1>Book Bound</h1>
       <h2>Search</h2>
-      <p>Your adventure in finding the next great read starts here. Search for your favorite books, discover new ones, and embark on a literary journey with us!</p>
+      <p className='info'>Your adventure in finding the next great read starts here. Search for your favorite books, discover new ones, and embark on a literary journey with us!</p>
       
       {/* Book search div. Have it so that they can be added to the books on deck and that it pulls from the api */}
       <div>
         <input
           type="text"
           id="searchInput"
-          placeholder="Enter book title"
+          placeholder="Enter Book Title"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -97,8 +98,8 @@ function App() {
         <button onClick={clearResults}>Clear</button>
         <div id="results">
           {filteredBooks.map((book, index) => (
-            <div key={index}>
-              <h2>{book.title}</h2>
+            <div className="book" key={index}>
+              <h3>{book.title}</h3>
               <p><strong>Author:</strong> {book.author}</p>
               <p><strong>Publish Date:</strong> {book.releaseDate}</p>
               <button onClick={() => addtoList(book)}>Add to List</button>
@@ -108,7 +109,7 @@ function App() {
       </div>
 
       <h2>Books on Deck</h2>
-      <p>Organize the books you can't wait to read! Add to your TBR (To Be Read) list and embark on endless journeys through the pages of great stories. Let's get reading!</p>
+      <p className='info'>Organize the books you can't wait to read! Add to your TBR (To Be Read) list and embark on endless journeys through the pages of great stories. Let's get reading!</p>
       
       {/* Book on Deck. Maybe make it so the only way you can add a book is through searching up the book then clicking add and then you can only strike through and delete books in this section */}
       {/* <form onSubmit={handleSubmit}>
