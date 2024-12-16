@@ -4,33 +4,33 @@ const bookList = [
   {
     title: "A Door in the Dark",
     author: "Scott Reintgen",
-    releaseDate: "2024-03-05"
+    releaseDate: "2024"
   },
   {
     title: "Children of Blood and Bone",
     author: "Tomi Adeyemi",
-    releaseDate: "2018-03-06"
+    releaseDate: "2018"
   },
   {
     title: "You've Reached Sam",
     author: "Dustin Thao",
-    releaseDate: "2021-11-09"
+    releaseDate: "2021"
   },
   {
     title: "The Hunger Games",
     author: "Suzanne Collins",
-    releaseDate: "2008-09-14"
+    releaseDate: "2008"
   },
   {
     title: "Begin Again",
     author: "Emma Lord",
-    releaseDate: "2024-01-09"
+    releaseDate: "2024"
   }
 ];
 
 function App() {
-  const [todos, setTodos] = useState([]);
-  const [newTodo, setNewTodo] = useState("");
+  const [books, setBook] = useState([]);
+  const [newBook, setNewTodo] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredBooks, setFilteredBooks] = useState([]);
 
@@ -42,31 +42,40 @@ function App() {
     setFilteredBooks(results);
   };
 
+  //Clear the books that were returned from the search result 
   const clearResults = () => {
     setFilteredBooks([]);
     setSearchQuery("");
   };
 
-  const handleDeleteTodo = (id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+  //Delete book from TBR list 
+  const handleDeleteBook = (id) => {
+    setBook(books.filter((todo) => todo.id !== id));
   };
 
+  //This function makes it so that you can add a book directly to TBR... I have disabled this function
   const handleSubmit = (event) => {
     event.preventDefault();
-    setTodos([...todos, { id: Date.now(), text: newTodo, completed: false }]);
+    setBook([...books, { id: Date.now(), text: newBook, completed: false }]);
     setNewTodo("");
   };
 
+  //Goes through the books state and updates the completed status of the book 
   const handleToggleCompleted = (id) => {
-    setTodos(
-      todos.map((todo) => {
-        if (todo.id === id) {
-          return { ...todo, completed: !todo.completed };
+    setBook(
+      books.map((book) => {
+        if (book.id === id) {
+          return { ...book, completed: !book.completed };
         } else {
-          return todo;
+          return book;
         }
       })
     );
+  };
+
+  //This adds a book to the TBR section from the search section
+  const addtoList = (book) => {
+    setBook([...books, { id: Date.now(), text: `${book.title} by ${book.author} (${book.releaseDate})`, completed: false }]);
   };
 
   return (
@@ -74,49 +83,54 @@ function App() {
       <h1>Book Bound</h1>
       <h2>Search</h2>
       <p>Your adventure in finding the next great read starts here. Search for your favorite books, discover new ones, and embark on a literary journey with us!</p>
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Enter book title"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      <button onClick={searchBooks}>Search</button>
-      <button onClick={clearResults}>Clear</button>
-      <div id="results">
-        {filteredBooks.map((book, index) => (
-          <div key={index}>
-            <h2>{book.title}</h2>
-            <p><strong>Author:</strong> {book.author}</p>
-            <p><strong>Publish Date:</strong> {book.releaseDate}</p>
-          </div>
-        ))}
-      </div>
       
+      {/* Book search div. Have it so that they can be added to the books on deck and that it pulls from the api */}
+      <div>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Enter book title"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button onClick={searchBooks}>Search</button>
+        <button onClick={clearResults}>Clear</button>
+        <div id="results">
+          {filteredBooks.map((book, index) => (
+            <div key={index}>
+              <h2>{book.title}</h2>
+              <p><strong>Author:</strong> {book.author}</p>
+              <p><strong>Publish Date:</strong> {book.releaseDate}</p>
+              <button onClick={() => addtoList(book)}>Add to List</button>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <h2>Books on Deck</h2>
       <p>Organize the books you can't wait to read! Add to your TBR (To Be Read) list and embark on endless journeys through the pages of great stories. Let's get reading!</p>
       
-      <form onSubmit={handleSubmit}>
+      {/* Book on Deck. Maybe make it so the only way you can add a book is through searching up the book then clicking add and then you can only strike through and delete books in this section */}
+      {/* <form onSubmit={handleSubmit}>
         <input
           type="text"
-          value={newTodo}
+          value={newBook}
           onChange={(event) => setNewTodo(event.target.value)}
         />
         <button type="submit">Add To Do</button>
-      </form>
+      </form> */}
       <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>
+        {books.map((book) => (
+          <li key={book.id}>
             <input
               type="checkbox"
-              checked={todo.completed}
-              onChange={() => handleToggleCompleted(todo.id)}
+              checked={book.completed}
+              onChange={() => handleToggleCompleted(book.id)}
             />
-            <span style={{ textDecoration: todo.completed ? "line-through" : "none" }}>
-              {todo.text}
+            <span style={{ textDecoration: book.completed ? "line-through" : "none" }}>
+              {book.text}
             </span>
-            <button onClick={() => handleDeleteTodo(todo.id)}>Delete</button>
+            <button onClick={() => handleDeleteBook(book.id)}>Delete</button>
           </li>
         ))}
       </ul>
