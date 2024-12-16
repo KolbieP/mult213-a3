@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './index.css'; 
+import { motion } from 'framer-motion';
 
 const bookList = [
   {
@@ -57,10 +58,10 @@ const bookList = [
 
 function App() {
   const [books, setBook] = useState([]);
-  const [newBook, setNewBook] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredBooks, setFilteredBooks] = useState([]);
   const [bookCount, setBookCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   //Counts the number of books in the TBR list 
   useEffect(() => {
@@ -68,15 +69,18 @@ function App() {
   }, [books]);
 
   // Search the books in the array and then output books that meet that search
-  // const searchBooks = () => {
-  //   const results = bookList.filter(book =>
-  //     book.title.toLowerCase().includes(searchQuery.toLowerCase())
-  //   ).slice(0, 5); // Limit results to the first 5 books
-  //   setFilteredBooks(results.length > 0 ? results : [{ title: "No results", author: "", releaseDate: "" }]);
-  // };
+  //Called if the API is down and searches the local Array 
+  const searchOfflineBooks = () => {
+    const results = bookList.filter(book =>
+      book.title.toLowerCase().includes(searchQuery.toLowerCase())
+    ).slice(0, 5); 
+    setFilteredBooks(results.length > 0 ? results : [{ title: "No results", author: "", releaseDate: "" }]);
+  };
 
   // Search the books using the Open Library API
+  //If there is an error fetching the API it calls searchOfflineBooks function
   const searchBooks = async () => {
+    setIsLoading(true);
     try {
       const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(searchQuery)}`);
       const data = await response.json();
@@ -88,7 +92,9 @@ function App() {
       setFilteredBooks(results.length > 0 ? results : [{ title: "No results", author: "", releaseDate: "" }]);
     } catch (error) {
       console.error("Error fetching data from Open Library API:", error);
-      setFilteredBooks([{ title: "No results", author: "", releaseDate: "" }]);
+      searchOfflineBooks();
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -101,13 +107,6 @@ function App() {
   //Delete book from TBR list 
   const handleDeleteBook = (id) => {
     setBook(books.filter((todo) => todo.id !== id));
-  };
-
-  //This function makes it so that you can add a book directly to TBR... I have disabled this function
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setBook([...books, { id: Date.now(), text: newBook, completed: false }]);
-    setNewBook("");
   };
 
   //Goes through the books state and updates the completed status of the book 
@@ -149,6 +148,13 @@ function App() {
         <button onClick={searchBooks}>Search</button>
         <button onClick={clearResults}>Clear</button>
         <div id="results">
+        {isLoading && (
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 1 }}
+              style={{ margin: '20px auto', width: '50px', height: '50px', border: '5px solid #c5b5e3', borderTop: '5px solid #6a0dad', borderRadius: '50%' }}
+            />
+          )}
           {filteredBooks.map((book, index) => (
             <div className="book" key={index}>
               <h3>{book.title}</h3>
