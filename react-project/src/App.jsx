@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import './index.css'; 
 import { motion } from 'framer-motion';
 
@@ -78,7 +78,7 @@ function App() {
   };
 
   // Search the books using the Open Library API
-  //If there is an error fetching the API it calls searchOfflineBooks function
+  //If there is an error fetching the API it calls searchOfflineBooks function which grabs books from the local array 
   const searchBooks = async () => {
     setIsLoading(true);
     try {
@@ -92,7 +92,7 @@ function App() {
       setFilteredBooks(results.length > 0 ? results : [{ title: "No results", author: "", releaseDate: "" }]);
     } catch (error) {
       console.error("Error fetching data from Open Library API:", error);
-      searchOfflineBooks();
+      searchOfflineBooks(); 
     } finally {
       setIsLoading(false);
     }
